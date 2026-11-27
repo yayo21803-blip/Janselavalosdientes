@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System;
 using System.Collections;
@@ -6,7 +7,8 @@ using Random = UnityEngine.Random;
 public class enemyspawn : MonoBehaviour
 {
     [SerializeField] private GameObject[] spawnPoints;
-    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyPrefabs;
+
     [SerializeField] private int limiteEnemigos = 10;
     [SerializeField] private float tiempoMinimo = 1f;
     [SerializeField] private float tiempoMaximo = 4f;
@@ -27,7 +29,6 @@ public class enemyspawn : MonoBehaviour
 
     void EmpezarRonda()
     {
-        // Evita que se inicien dos corrutinas a la vez
         if (rutinaSpawn != null)
         {
             StopCoroutine(rutinaSpawn);
@@ -41,7 +42,6 @@ public class enemyspawn : MonoBehaviour
     {
         while (enemigosSpawneados < limiteEnemigos)
         {
-            // Espera un tiempo aleatorio antes de cada aparición
             float espera = Random.Range(tiempoMinimo, tiempoMaximo);
             yield return new WaitForSeconds(espera);
 
@@ -69,16 +69,21 @@ public class enemyspawn : MonoBehaviour
 
     void SpawnEnemy()
     {
-        if (spawnPoints.Length == 0 || enemyPrefab == null)
+        if (spawnPoints.Length == 0 || enemyPrefabs.Length == 0)
         {
-            Debug.LogWarning("No hay spawn points o prefab asignados.");
+            Debug.LogWarning("No hay spawn points o prefabs asignados.");
             return;
         }
 
+        // Elegir un enemigo aleatorio
+        int indiceEnemigo = Random.Range(0, enemyPrefabs.Length);
+        GameObject enemigoSeleccionado = enemyPrefabs[indiceEnemigo];
+
+        // Elegir un punto de aparición
         Transform puntoSeleccionado = spawnPoints[ElegirSP()].transform;
 
         Instantiate(
-            enemyPrefab,
+            enemigoSeleccionado,
             puntoSeleccionado.position,
             puntoSeleccionado.rotation
         );
